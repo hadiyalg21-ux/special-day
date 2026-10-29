@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#ffe3ec" />
+  <title>For My Jay Babyyyy ❤️</title>
+
+  <!-- Handwritten-style web fonts (optional). If they can't load, the fallback fonts in the CSS are used. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Dancing+Script:wght@600;700&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    /* =====================================================
+       1. BASIC SETUP + COLOURS
+       Change the colours here if you ever want a new palette.
+       ===================================================== */
+    :root {
+      --pink-50:  #fff5f8;
+      --pink-100: #ffe3ec;
+      --pink-200: #ffc9d9;
+      --pink-300: #ffb3c9;
+      --pink-400: #ff8fb1;
+      --rose-500: #d6457a;
+      --rose-700: #b03a62;
+      --ink:      #5b3a45;
+      --cream:    #fffaf5;
+
+      --font-script: "Dancing Script", "Segoe Script", "Brush Script MT", cursive;
+      --font-hand:   "Caveat", "Segoe Print", "Bradley Hand", "Comic Sans MS", cursive;
+      --font-ui:     "Quicksand", "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body { margin: 0; min-height: 100%; }
+
+    body {
+      font-family: var(--font-ui);
+      color: var(--rose-700);
+      background:
+        radial-gradient(circle at 15% 10%, rgba(255, 255, 255, .9), transparent 40%),
+        radial-gradient(circle at 85% 90%, rgba(255, 190, 210, .55), transparent 45%),
+        linear-gradient(160deg, var(--pink-50), var(--pink-100));
+      background-attachment: fixed;
+      overflow-x: hidden;
+    }
+
+    body.lock { overflow: hidden; } /* stops the page behind the letter from scrolling */
+
+    /* =====================================================
+       2. FLOATING HEARTS + SPARKLES (created by JavaScript)
+       ===================================================== */
+    .floaters {
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+    #bgHearts { z-index: 0; }
+
+    .floater {
+      position: absolute;
+      bottom: -40px;
+      line-height: 1;
+      opacity: 0;
+      user-select: none;
+      will-change: transform, opacity;
+      animation: rise linear forwards;
+    }
+
+    @keyframes rise {
+      0%   { transform: translate3d(0, 0, 0) rotate(-10deg) scale(.7); opacity: 0; }
+      10%  { opacity: .85; }
+      50%  { transform: translate3d(18px, -55vh, 0) rotate(10deg) scale(1); }
+      90%  { opacity: .7; }
+      100% { transform: translate3d(-12px, -115vh, 0) rotate(-8deg) scale(.9); opacity: 0; }
+    }
+
+    /* =====================================================
+       3. FIRST SCREEN LAYOUT (heading + envelope + button)
+       ===================================================== */
+    .stage {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      padding: 28px 16px 36px;
+      text-align: center;
+    }
+
+    .title {
+      margin: 0;
+      font-family: var(--font-script);
+      font-weight: 700;
+      font-size: clamp(2.1rem, 9vw, 3.4rem);
+      color: var(--rose-500);
+      text-shadow: 0 2px 0 #fff, 0 6px 18px rgba(214, 69, 122, .25);
+      line-height: 1.15;
+    }
+
+    .subtitle {
+      margin: 0 0 26px;
+      font-size: clamp(.95rem, 3.8vw, 1.1rem);
+      font-weight: 600;
+      color: var(--rose-700);
+      opacity: .9;
+    }
+
+    /* The wrapper that floats up and down gently */
+    .envelope-float {
+      position: relative;
+      animation: floaty 4.2s ease-in-out infinite;
+    }
+    .envelope-float.paused { animation-play-state: paused; }
+
+    @keyframes floaty {
+      0%, 100% { transform: translateY(0); }
+      50%      { transform: translateY(-10px); }
+    }
+
+    /* Soft shadow on the "ground" under the envelope */
+    .env-ground-shadow {
+      position: absolute;
+      left: 12%;
+      right: 12%;
+      bottom: -26px;
+      height: 18px;
+      border-radius: 50%;
+      background: radial-gradient(ellipse at center, rgba(214, 69, 122, .35), transparent 70%);
+      filter: blur(6px);
+    }
+
+    /* =====================================================
+       4. THE ENVELOPE (all parts stacked with z-index)
+       z-index order (back → front):
+         0 back  |  1 flap when OPEN  |  2 peeking letter
+         3 front pocket  |  4 flap when CLOSED  |  5 heart seal
+       ===================================================== */
+    .envelope {
+      position: relative;
+      width: min(86vw, 380px);
+      aspect-ratio: 3 / 2;
+      perspective: 1100px;            /* gives the flap its 3D look */
+      cursor: pointer;
+      border-radius: 10px;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .envelope:focus-visible { outline: 3px solid #ff7aa2; outline-offset: 8px; }
+
+    .env-back {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      border-radius: 10px;
+      background: linear-gradient(160deg, #f6a6bd, #ec8aab);
+      box-shadow: 0 18px 40px rgba(214, 69, 122, .28), 0 4px 10px rgba(214, 69, 122, .18);
+    }
+
+    /* The small white paper that slides out of the envelope first */
+    .peek-letter {
+      position: absolute;
+      left: 6%;
+      top: 10%;
+      width: 88%;
+      height: 82%;
+      z-index: 2;
+      border-radius: 6px;
+      background:
+        repeating-linear-gradient(to bottom, transparent 0 17px, rgba(255, 150, 180, .28) 17px 18px),
+        linear-gradient(180deg, #ffffff, #fffaf5);
+      background-position: 0 26px, 0 0;
+      box-shadow: 0 2px 8px rgba(120, 40, 70, .12);
+      transition: transform 1s cubic-bezier(.4, .1, .2, 1);
+    }
+    .peek-letter::before {
+      content: "♥";
+      position: absolute;
+      top: 8px;
+      left: 10px;
+      font-size: 14px;
+      color: var(--pink-400);
+    }
+    .envelope.peek-up .peek-letter { transform: translateY(-45%); }
+
+    /* The front "pocket": covers everything except the top triangle (where the flap sits) */
+    .env-front {
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      border-radius: 10px;
+      clip-path: polygon(0 0, 50% 55%, 100% 0, 100% 100%, 0 100%);
+      background: linear-gradient(180deg, #ffc9d9 0%, #ffb0c8 100%);
+    }
+    .env-front svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+    .env-label {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 9%;
+      padding: 0 8px;
+      font-family: var(--font-script);
+      font-weight: 700;
+      font-size: clamp(1.05rem, 4.8vw, 1.5rem);
+      color: var(--rose-700);
+      text-shadow: 0 1px 0 rgba(255, 255, 255, .7);
+    }
+
+    /* The triangular flap. It has two faces: outside (pink) and inside (light). */
+    .flap {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 55%;
+      z-index: 4;
+      transform-origin: 50% 0;
+      transform-style: preserve-3d;
+      transition: transform .9s cubic-bezier(.5, 0, .3, 1), z-index 0s linear .45s;
+    }
+    .flap-face {
+      position: absolute;
+      inset: 0;
+      clip-path: polygon(0 0, 100% 0, 50% 100%);
+      border-radius: 10px 10px 0 0;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+    }
+    .flap-front { background: linear-gradient(180deg, #ff9dbc, #ffb5cc); }
+    .flap-back  { background: linear-gradient(0deg, #f8bfd0, #fcdce6); transform: rotateX(180deg); }
+    .envelope.flap-open .flap { transform: rotateX(180deg); z-index: 1; }
+
+    /* The heart-shaped wax seal */
+    .seal {
+      position: absolute;
+      left: 50%;
+      top: 55%;
+      width: 17%;
+      z-index: 5;
+      transform: translate(-50%, -50%);
+      filter: drop-shadow(0 3px 4px rgba(150, 20, 60, .35));
+      transition: opacity .5s ease, transform .5s ease;
+    }
+    .seal svg { display: block; width: 100%; height: auto; }
+    .envelope.seal-gone .seal { opacity: 0; transform: translate(-50%, -50%) scale(1.5); }
+
+    /* =====================================================
+       5. BUTTONS
+       ===================================================== */
+    .btn {
+      font-family: var(--font-ui);
+      font-weight: 700;
+      font-size: 1.05rem;
+      border: 0;
+      border-radius: 999px;
+      padding: 14px 30px;
+      cursor: pointer;
+      transition: transform .2s ease, box-shadow .2s ease, opacity .3s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .btn:focus-visible { outline: 3px solid #ff7aa2; outline-offset: 4px; }
+    .btn:disabled { cursor: default; opacity: .6; }
+
+    .btn-primary {
+      margin-top: 30px;
+      color: #fff;
+      background: linear-gradient(135deg, #ff8fb1, #e8528a);
+      box-shadow: 0 10px 24px rgba(232, 82, 138, .35);
+    }
+    .btn-primary:not(:disabled):hover  { transform: translateY(-2px); box-shadow: 0 14px 28px rgba(232, 82, 138, .42); }
+    .btn-primary:not(:disabled):active { transform: scale(.97); }
+
+    .btn-soft {
+      color: var(--rose-700);
+      background: #fff;
+      border: 2px solid var(--pink-300);
+      box-shadow: 0 8px 20px rgba(214, 69, 122, .2);
+      padding: 11px 26px;
+      font-size: 1rem;
+    }
+    .btn-soft:not(:disabled):hover  { transform: translateY(-2px); }
+    .btn-soft:not(:disabled):active { transform: scale(.97); }
+
+    .hint { margin: 4px 0 0; font-size: .95rem; font-weight: 600; opacity: .8; }
+
+    /* =====================================================
+       6. THE OPENED LETTER (full-screen layer above everything)
+       ===================================================== */
+    .letter-layer {
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      padding: 16px;
+      visibility: hidden;      /* hidden but still measurable by JavaScript */
+      pointer-events: none;
+    }
+    .letter-layer.on { visibility: visible; pointer-events: auto; }
+
+    /* Soft blurry blush backdrop that fades in */
+    .letter-layer::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 50% 40%, rgba(255, 245, 248, .8), rgba(255, 214, 227, .88));
+      -webkit-backdrop-filter: blur(6px);
+      backdrop-filter: blur(6px);
+      opacity: 0;
+      transition: opacity .9s ease;
+    }
+    .letter-layer.dim::before { opacity: 1; }
+
+    #layerFloaters { z-index: 0; position: absolute; }
+
+    .letter-card {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 600px;
+      max-height: calc(100vh - 110px);
+      max-height: calc(100dvh - 110px);
+      display: flex;
+      flex-direction: column;
+      border-radius: 18px;
+      background: linear-gradient(180deg, #ffffff, var(--cream));
+      box-shadow: 0 24px 60px rgba(176, 58, 98, .3), 0 4px 14px rgba(176, 58, 98, .15);
+      transition: transform 1s cubic-bezier(.22, .8, .3, 1);
+      will-change: transform;
+      outline: none;
+    }
+
+    /* Decorations that sit on top of the card (they don't scroll) */
+    .card-deco {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      pointer-events: none;
+      border-radius: 18px;
+      opacity: 0;
+      transition: opacity .5s ease;
+    }
+    .card-deco::after {              /* dashed inner border like a stationery card */
+      content: "";
+      position: absolute;
+      inset: 7px;
+      border: 1.5px dashed rgba(255, 143, 177, .55);
+      border-radius: 13px;
+    }
+    .corner {
+      position: absolute;
+      font-size: 16px;
+      line-height: 1;
+      color: var(--pink-400);
+      background: var(--cream);
+      padding: 2px 4px;
+      border-radius: 50%;
+      z-index: 1;
+    }
+    .corner.tl { top: 1px;    left: 1px;  transform: rotate(-18deg); }
+    .corner.tr { top: 1px;    right: 1px; transform: rotate(18deg); }
+    .corner.bl { bottom: 1px; left: 1px;  transform: rotate(18deg); }
+    .corner.br { bottom: 1px; right: 1px; transform: rotate(-18deg); }
+
+    .scroll-hint {
+      position: absolute;
+      bottom: 14px;
+      left: 50%;
+      z-index: 3;
+      transform: translateX(-50%);
+      padding: 5px 14px;
+      border-radius: 999px;
+      font-size: .8rem;
+      font-weight: 700;
+      color: var(--rose-700);
+      background: rgba(255, 227, 236, .95);
+      box-shadow: 0 4px 12px rgba(214, 69, 122, .2);
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity .3s ease;
+    }
+    .scroll-hint.show { opacity: 1; animation: nudge 1.6s ease-in-out infinite; }
+    @keyframes nudge {
+      0%, 100% { transform: translate(-50%, 0); }
+      50%      { transform: translate(-50%, 4px); }
+    }
+
+    /* The scrollable area that holds the message (the letter grows with the text) */
+    .letter-scroll {
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      -webkit-overflow-scrolling: touch;
+      padding: clamp(28px, 6vw, 46px) clamp(22px, 6vw, 46px) 46px;
+      opacity: 0;
+      transition: opacity .5s ease;
+      /* subtle, pretty scrollbar */
+      scrollbar-width: thin;
+      scrollbar-color: var(--pink-300) transparent;
+    }
+    .letter-scroll::-webkit-scrollbar { width: 8px; }
+    .letter-scroll::-webkit-scrollbar-track { background: transparent; margin: 18px 0; }
+    .letter-scroll::-webkit-scrollbar-thumb {
+      background: linear-gradient(var(--pink-300), var(--pink-400));
+      border-radius: 8px;
+      border: 2px solid var(--cream);
+    }
+
+    .letter-card.show-text .letter-scroll,
+    .letter-card.show-text .card-deco { opacity: 1; }
+
+    /* ---- Message typography ---- */
+    .letter-message {
+      font-family: var(--font-hand);
+      font-size: clamp(1.3rem, 4.9vw, 1.6rem);
+      line-height: 1.55;
+      color: var(--ink);
+    }
+    .letter-message > * {
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity .6s ease, transform .6s ease;
+    }
+    .letter-card.show-text .letter-message > * {
+      opacity: 1;
+      transform: none;
+      transition-delay: calc(var(--i, 0) * 70ms);
+    }
+
+    .letter-message p { margin: 0 0 1.1em; }
+
+    .greeting {
+      margin: 0 0 .55em;
+      font-family: var(--font-script);
+      font-weight: 700;
+      font-size: clamp(1.9rem, 7.4vw, 2.7rem);
+      line-height: 1.2;
+      color: var(--rose-500);
+    }
+
+    /* soft pink highlighter effect for important phrases */
+    .hl {
+      font-weight: 700;
+      color: var(--rose-700);
+      background: linear-gradient(transparent 55%, rgba(255, 179, 201, .65) 55%);
+      border-radius: 3px;
+      padding: 0 2px;
+    }
+    .letter-message strong { color: var(--rose-500); }
+
+    .signoff { text-align: right; margin-top: 1.5em; }
+    .signoff p { margin: 0; }
+    .signoff .name {
+      font-family: var(--font-script);
+      font-weight: 700;
+      font-size: 1.5em;
+      color: var(--rose-500);
+    }
+
+    /* Close button below the letter (always visible, never inside the scroll area) */
+    .close-btn {
+      position: relative;
+      z-index: 1;
+      opacity: 0;
+      transform: translateY(8px);
+      pointer-events: none;
+    }
+    .letter-layer.ready .close-btn { opacity: 1; transform: none; pointer-events: auto; }
+
+    /* =====================================================
+       7. RESPECT "REDUCED MOTION" SETTINGS
+       ===================================================== */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
+        transition-delay: 0s !important;
+      }
+      .floaters { display: none; }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Floating hearts in the page background (filled by JavaScript) -->
+  <div class="floaters" id="bgHearts" aria-hidden="true"></div>
+
+  <!-- ===================== FIRST SCREEN ===================== -->
+  <main class="stage" id="stage">
+    <h1 class="title">For My Jay Babyyyy ❤️</h1>
+    <p class="subtitle">A little something from Jensi, made with love 💗</p>
+
+    <div class="envelope-float" id="envelopeFloat">
+      <div class="envelope" id="envelope" role="button" tabindex="0" aria-label="Closed envelope. Press to open your letter">
+        <div class="env-back"></div>
+
+        <!-- small paper that peeks out first -->
+        <div class="peek-letter" id="peekLetter" aria-hidden="true"></div>
+
+        <!-- front pocket -->
+        <div class="env-front">
+          <svg viewBox="0 0 100 66.6667" preserveAspectRatio="none" aria-hidden="true">
+            <g fill="none" stroke-linecap="round" vector-effect="non-scaling-stroke">
+              <path d="M0 66.67 L50 36.67" stroke="rgba(214,69,122,.22)" stroke-width="1.2" vector-effect="non-scaling-stroke"/>
+              <path d="M100 66.67 L50 36.67" stroke="rgba(214,69,122,.22)" stroke-width="1.2" vector-effect="non-scaling-stroke"/>
+              <path d="M0 0 L50 36.67 L100 0" stroke="rgba(255,255,255,.7)" stroke-width="1.4" vector-effect="non-scaling-stroke"/>
+            </g>
+          </svg>
+          <div class="env-label">To My Favourite Person ❤️</div>
+        </div>
+
+        <!-- 3D flap -->
+        <div class="flap" aria-hidden="true">
+          <div class="flap-face flap-front"></div>
+          <div class="flap-face flap-back"></div>
+        </div>
+
+        <!-- heart seal -->
+        <div class="seal" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <defs>
+              <linearGradient id="sealGrad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#ff5c8d"/>
+                <stop offset="1" stop-color="#d6306a"/>
+              </linearGradient>
+            </defs>
+            <path fill="url(#sealGrad)" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+            <ellipse cx="8" cy="7.3" rx="2.2" ry="1.3" fill="#fff" opacity=".45" transform="rotate(-30 8 7.3)"/>
+          </svg>
+        </div>
+      </div>
+      <div class="env-ground-shadow" aria-hidden="true"></div>
+    </div>
+
+    <button class="btn btn-primary" id="openBtn" type="button">Open Your Letter 💌</button>
+    <p class="hint">Tap the envelope to open your surprise ✨</p>
+  </main>
+
+  <!-- ===================== OPENED LETTER ===================== -->
+  <div class="letter-layer" id="letterLayer">
+    <div class="floaters" id="layerFloaters" aria-hidden="true"></div>
+
+    <article class="letter-card" id="letterCard" role="dialog" aria-modal="true" aria-labelledby="letter-greeting" tabindex="-1">
+      <div class="card-deco" aria-hidden="true">
+        <span class="corner tl">♥</span>
+        <span class="corner tr">♥</span>
+        <span class="corner bl">♥</span>
+        <span class="corner br">♥</span>
+      </div>
+      <div class="scroll-hint" id="scrollHint" aria-hidden="true">scroll down 💗</div>
+
+      <div class="letter-scroll" id="letterScroll">
+
+        <!-- ========================================= -->
+        <!-- JENSI'S PERSONAL BIRTHDAY MESSAGE FOR JAY -->
+        <!-- EDIT THE LETTER TEXT HERE -->
+        <!-- ========================================= -->
+        <section class="letter-message" id="letterMessage" aria-label="Birthday message from Jensi">
+
+          <h2 class="greeting" id="letter-greeting">Happy Birthday, Mara Babyyyyy! ❤️🎂🫶🏻</h2>
+
+          <p>Heyyy bachaaaaa, 🥹❤️</p>
+
+          <p>Aaje taro special day chhe, and I just want to tell you how much you mean to me. Honestly, sometimes words ochha padi jaay chhe to explain my feelings, but today I want to try because you deserve to know <span class="hl">how special you are to me</span>. 💗</p>
+
+          <p>Babyyyy, I wish you could see yourself through my eyes just once. Maybe then you would understand why <em>your happiness matters so much to me</em>, why your little things make me smile, and why you have such a special place in my heart. 🥹❤️</p>
+
+          <p>I pray ke tara life ma hamesha happiness, success, peace, and lots of love rahe. Tara badha dreams pura thaay, tu je kai achieve karva maange ema tane success male, and tu hamesha potana par proud feel kare. Life ma game atli difficulties aave, pan I hope tu hamesha strong rahe and never stops believing in yourself. You deserve so many beautiful things, babyyyy. 🫶🏻✨</p>
+
+          <p>And listen, <strong>Mr. Sigma Boy!</strong> 😏😂 Duniya mate tu game etlo cool ban, but mara mate tu hamesha maro <span class="hl">cute pookie j rahis</span>. I love your curly hair, your silly talks, your cute anger, and all those little things that make you YOU. Maybe hu tane roj badhu na kehti hou, but I notice and love these little things more than you know. ❤️😭</p>
+
+          <p>Hu jaanu chhu ke hu perfect nathi. Hu overthink karu chhu, kyarek nani nani vaato par upset pan thai jau chhu, and sometimes mane mari feelings express karta pan nathi aavdtu. But one thing I know for sure is that you mean a lot to me, babyy. <span class="hl">I'm genuinely happy to have you in my life</span>, and I hope we keep understanding each other, supporting each other, and making beautiful memories together. 🥹💗</p>
+
+          <p>On your birthday, I don't just wish you gifts and celebrations. I wish you <span class="hl">a peaceful mind, a happy heart, good health, success, and countless reasons to smile</span>. I hope this new year brings you closer to all your dreams. And haan, I hope I get to celebrate many more birthdays with you, annoying you a little more every year! 😂❤️</p>
+
+          <p><strong>Happy Birthday once again, mara bachaaaaa!</strong> 🎂💋</p>
+
+          <p>Hamesha khush rehje, smile karto rehje, and never forget how special you are. <span class="hl">Hu tane khub khub khub badho prem karu chhu.</span> <em>Maybe words ma badhu explain na kari shaku</em>, but my feelings for you are real, and you will always have a special place in my heart. ❤️🧿</p>
+
+          <p>Stay blessed, my pookieeeee. I love you so much, babyyyyy! 🫶🏻💗</p>
+
+          <div class="signoff">
+            <p>Lots of love,</p>
+            <p class="name">Your Jenuuu babyyy ❤️</p>
+          </div>
+
+        </section>
+        <!-- ========================================= -->
+        <!-- END OF PERSONAL MESSAGE                   -->
+        <!-- ========================================= -->
+
+      </div>
+    </article>
+
+    <button class="btn btn-soft close-btn" id="closeBtn" type="button">Close Letter 💗</button>
+  </div>
+
+  <script>
+    /* =====================================================
+       ENVELOPE LETTER – JAVASCRIPT
+       You normally never need to edit this file section.
+       (Your message lives in the HTML section marked
+        "EDIT THE LETTER TEXT HERE".)
+       ===================================================== */
+    (function () {
+      'use strict';
+
+      // ---------- 1. Grab the elements we need ----------
+      const $ = (selector) => document.querySelector(selector);
+
+      const envelopeFloat = $('#envelopeFloat');
+      const envelope      = $('#envelope');
+      const peek          = $('#peekLetter');
+      const openBtn       = $('#openBtn');
+      const layer         = $('#letterLayer');
+      const card          = $('#letterCard');
+      const scroller      = $('#letterScroll');
+      const closeBtn      = $('#closeBtn');
+      const hint          = $('#scrollHint');
+      const bgHearts      = $('#bgHearts');
+      const layerFloaters = $('#layerFloaters');
+
+      // ---------- 2. Animation timing ----------
+      // If the person prefers reduced motion, we wait much less between steps.
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const speed = reduceMotion ? 0.05 : 1;
+      const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms * speed));
+
+      // ---------- 3. State: stops double-clicks from breaking things ----------
+      // 'closed' -> 'opening' -> 'open' -> 'closing' -> 'closed' ...
+      let state = 'closed';
+      let heartTimer = null;
+
+      // ---------- 4. Floating hearts and sparkles ----------
+      const GLYPHS = ['♥', '♥', '♥', '💗', '✦', '✧'];
+      const COLORS = ['#ff8fb1', '#ffb3c9', '#f06292', '#ffc2d6', '#e8528a'];
+      const pick = (list) => list[Math.floor(Math.random() * list.length)];
+
+      function spawnFloater(container, startMidFlight) {
+        const el = document.createElement('span');
+        const duration = 7 + Math.random() * 7; // seconds
+        el.className = 'floater';
+        el.textContent = pick(GLYPHS);
+        el.style.left = Math.random() * 100 + '%';
+        el.style.fontSize = 12 + Math.random() * 20 + 'px';
+        el.style.color = pick(COLORS);
+        el.style.animationDuration = duration + 's';
+        // a negative delay makes the heart start part-way up the screen
+        el.style.animationDelay = startMidFlight ? -Math.random() * duration + 's' : '0s';
+        el.addEventListener('animationend', () => el.remove());
+        container.appendChild(el);
+      }
+
+      if (!reduceMotion) {
+        for (let i = 0; i < 14; i++) spawnFloater(bgHearts, true);
+        setInterval(() => {
+          if (!document.hidden && bgHearts.childElementCount < 26) spawnFloater(bgHearts, false);
+        }, 900);
+      }
+
+      // ---------- 5. Little helpers ----------
+      // Give each paragraph of the letter a number so they fade in one after another.
+      scroller.querySelectorAll('.letter-message > *').forEach((el, i) => {
+        el.style.setProperty('--i', i);
+      });
+
+      // Shows "scroll down" only while there is more letter below.
+      function updateScrollHint() {
+        const hasMore = scroller.scrollHeight > scroller.clientHeight + 4;
+        const atTop = scroller.scrollTop < 12;
+        hint.classList.toggle('show', hasMore && atTop && state === 'open');
+      }
+      scroller.addEventListener('scroll', updateScrollHint, { passive: true });
+      window.addEventListener('resize', updateScrollHint);
+
+      // Works out the "move + resize" needed to make the big letter match the small peeking paper.
+      // (The big letter then animates from that spot to its normal place = it grows out of the envelope.)
+      function transformMatchingPeek() {
+        const p = peek.getBoundingClientRect();
+        const c = card.getBoundingClientRect(); // card is at its natural place when this is called
+        const dx = (p.left + p.width / 2) - (c.left + c.width / 2);
+        const dy = (p.top + p.height / 2) - (c.top + c.height / 2);
+        const sx = p.width / c.width;
+        const sy = p.height / c.height;
+        return `translate(${dx}px, ${dy}px) scale(${sx}, ${sy})`;
+      }
+
+      // ---------- 6. OPEN the letter ----------
+      async function openLetter() {
+        if (state !== 'closed') return; // ignore clicks while an animation is running
+        state = 'opening';
+        openBtn.disabled = true;
+        envelopeFloat.classList.add('paused');
+
+        // Step 1: seal fades away
+        envelope.classList.add('seal-gone');
+        await wait(300);
+
+        // Step 2: flap rotates open in 3D
+        envelope.classList.add('flap-open');
+        await wait(900);
+
+        // Step 3: small paper slides up out of the envelope
+        envelope.classList.add('peek-up');
+        await wait(1000);
+
+        // Step 4: swap the small paper for the big letter and let it grow to full size
+        const startTransform = transformMatchingPeek();
+        card.style.transition = 'none';
+        card.style.transform = startTransform;
+        layer.classList.add('on', 'dim');
+        peek.style.visibility = 'hidden';
+        document.body.classList.add('lock');
+        void card.offsetWidth; // forces the browser to apply the start position first
+        card.style.transition = '';
+        card.style.transform = 'translate(0px, 0px) scale(1, 1)';
+
+        // Step 5: hearts + sparkles, then the message fades in
+        if (!reduceMotion) {
+          for (let i = 0; i < 16; i++) spawnFloater(layerFloaters, true);
+        }
+        await wait(650);
+        card.classList.add('show-text');
+        layer.classList.add('ready');
+        await wait(700);
+
+        state = 'open';
+        card.focus({ preventScroll: true });
+        updateScrollHint();
+
+        // keep a few hearts floating while the letter is open
+        if (!reduceMotion) {
+          heartTimer = setInterval(() => {
+            if (layerFloaters.childElementCount < 22) spawnFloater(layerFloaters, false);
+          }, 800);
+        }
+      }
+
+      // ---------- 7. CLOSE the letter ----------
+      async function closeLetter() {
+        if (state !== 'open') return;
+        state = 'closing';
+        clearInterval(heartTimer);
+        hint.classList.remove('show');
+
+        // Step 1: text fades out
+        layer.classList.remove('ready');
+        card.classList.remove('show-text');
+        await wait(400);
+        scroller.scrollTop = 0;
+
+        // Step 2: big letter shrinks back to the small paper
+        layer.classList.remove('dim');
+        card.style.transform = transformMatchingPeek();
+        await wait(1000);
+
+        // Step 3: swap back to the small paper (inside the envelope)
+        peek.style.visibility = '';
+        layer.classList.remove('on');
+        layerFloaters.textContent = '';
+        document.body.classList.remove('lock');
+        card.style.transition = 'none';
+        card.style.transform = '';
+        void card.offsetWidth;
+        card.style.transition = '';
+
+        // Step 4: paper slides back in, flap closes, seal returns
+        envelope.classList.remove('peek-up');
+        await wait(1000);
+        envelope.classList.remove('flap-open');
+        await wait(950);
+        envelope.classList.remove('seal-gone');
+        await wait(500);
+
+        envelopeFloat.classList.remove('paused');
+        openBtn.disabled = false;
+        state = 'closed';
+        openBtn.focus({ preventScroll: true });
+      }
+
+      // ---------- 8. Hook up the buttons ----------
+      openBtn.addEventListener('click', openLetter);
+      envelope.addEventListener('click', openLetter);
+      envelope.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          openLetter();
+        }
+      });
+      closeBtn.addEventListener('click', closeLetter);
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') closeLetter();
+      });
+    })();
+  </script>
+</body>
+</html>
